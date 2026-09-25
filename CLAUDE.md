@@ -32,10 +32,11 @@ python -m ingest.github_cli --repo <owner/name>     # Module 0b (needs .env)
 python -m normalization.cli --repo <owner/name>      # Module 1
 python -m database.cli --repo <owner/name>            # Module 2
 python -m analysis.cli --repo <owner/name>            # Module 4 (repo must be loaded first)
+python -m analysis.risk_cli --repo <owner/name>       # Module 5
 python pipeline.py --repo <owner/name>                # Modules 0a-3 in one go
 pytest tests/ -v
 ```
 
 ## Next module to build
 
-Module 5 — Bus-Factor / Risk Analysis (see `docs/PROJECT.md` status table).
+Module 6 — Multi-Repo Evaluation (see `docs/PROJECT.md` status table).

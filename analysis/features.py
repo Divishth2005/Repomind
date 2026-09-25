@@ -28,8 +28,16 @@ def _new():
     return {"_commits": set(), "lines_changed": 0, "_prs": set(), "_reviews": set(), "_issues": set()}
 
 
-def build_features(activity: dict, depth: int | None = None, half_life_days: float = DEFAULT_HALF_LIFE_DAYS):
-    """Returns ({component: {developer_id: features}}, reference_date)."""
+def build_features(
+    activity: dict,
+    depth: int | None = None,
+    half_life_days: float = DEFAULT_HALF_LIFE_DAYS,
+    recent_days: float = 365.0,
+):
+    """Returns ({component: {developer_id: features}}, reference_date).
+
+    `recent_commits` counts commits within `recent_days` of the reference
+    date (the repo's latest commit); Module 5 uses it to tell who is still active."""
     times = {}
     for commit_id, _dev, ts, *_ in activity["commits"]:
         times[commit_id] = parse_ts(ts)
@@ -62,6 +70,9 @@ def build_features(activity: dict, depth: int | None = None, half_life_days: flo
                     recency_weight(t, reference, half_life_days) for t in commit_times
                 ),
                 "active_years": active_years(commit_times),
+                "recent_commits": sum(
+                    1 for t in commit_times if (reference - t).total_seconds() / 86400.0 <= recent_days
+                ),
                 "first_active": min(commit_times).isoformat() if commit_times else None,
                 "last_active": max(commit_times).isoformat() if commit_times else None,
                 "pr_count": len(f["_prs"]),
