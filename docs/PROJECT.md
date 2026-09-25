@@ -23,7 +23,7 @@ knowledge/retrieval layer come first.
 | 3 — Knowledge map visualization | Done |
 | 4 — Knowledge concentration metrics | Done (see docs/METRICS.md) |
 | 5 — Bus-factor / risk analysis | Done (see docs/RISK.md) |
-| 6 — Multi-repo evaluation | Not started |
+| 6 — Multi-repo evaluation | Done for 8 repos (plan suggests 10–20); see docs/EVALUATION.md |
 | 7 — Structured + semantic retrieval | Not started |
 | 8 — RAG / LLM integration | Not started |
 | 9 — Context-aware code explanation | Not started |
@@ -78,6 +78,10 @@ python -m analysis.cli --repo pallets/flask
 # Module 5: bus-factor / maintenance-risk signals
 python -m analysis.risk_cli --repo pallets/flask --sensitivity
 
+# Module 6: multi-repo evaluation (downloads ~7 repos, ~35 min, resumable)
+python -m evaluation.acquire
+python -m evaluation.cli
+
 # Tests
 pytest tests/ -v
 ```
@@ -90,11 +94,12 @@ normalization/      Module 1 -- raw JSONL -> normalized entities + identity reso
 database/            Module 2 -- SQLite schema, loader, relationship queries
 visualization/        Module 3 -- developer <-> file knowledge map (HTML)
 analysis/              Modules 4-5 -- concentration metrics, bus-factor risk signals
+evaluation/            Module 6 -- multi-repo batch runner, statistics, sensitivity experiments
 data/raw/             Raw, immutable acquisition output (JSONL)
 data/processed/        Normalized entities (JSONL) -- regeneratable from raw
 data/repomind.sqlite     Derived queryable database -- regeneratable from processed/
 tests/                  pytest suite
-docs/                    This file + DATA_MODEL.md + METRICS.md + RISK.md
+docs/                    This file + DATA_MODEL.md + METRICS.md + RISK.md + EVALUATION.md (+ generated EVALUATION_RESULTS.md)
 ```
 
 ## Design rules this project follows

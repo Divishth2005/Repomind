@@ -6,6 +6,7 @@ Usage:
     python pipeline.py --repo owner/name --skip-github   # git-only, no token needed
 """
 import argparse
+import json
 import time
 from pathlib import Path
 
@@ -97,6 +98,7 @@ def run(repo: str, skip_github: bool = False):
     _write_jsonl(out_dir / "pull_requests.jsonl", normalized["pull_requests"])
     _write_jsonl(out_dir / "reviews.jsonl", normalized["reviews"])
     _write_jsonl(out_dir / "labels.jsonl", normalized["labels"])
+    (out_dir / "validation_report.json").write_text(json.dumps(report, indent=2))
 
     # Stage 4: Database
     print("[4/5] Building SQLite database ...")

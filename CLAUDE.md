@@ -33,10 +33,12 @@ python -m normalization.cli --repo <owner/name>      # Module 1
 python -m database.cli --repo <owner/name>            # Module 2
 python -m analysis.cli --repo <owner/name>            # Module 4 (repo must be loaded first)
 python -m analysis.risk_cli --repo <owner/name>       # Module 5
+python -m evaluation.acquire && python -m evaluation.cli   # Module 6 (long download)
 python pipeline.py --repo <owner/name>                # Modules 0a-3 in one go
 pytest tests/ -v
 ```
 
 ## Next module to build
 
-Module 6 — Multi-Repo Evaluation (see `docs/PROJECT.md` status table).
+Module 7 — Structured + Semantic Retrieval (see `docs/PROJECT.md` status table).
+Open issues from `docs/EVALUATION.md` worth fixing first if results matter: squash-merge PR linkage and Git↔GitHub identity linking.

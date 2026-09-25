@@ -81,7 +81,7 @@ def main():
           f(v["dataset"]["files"]), f(v["dataset"]["committer_identities"]), f(v["dataset"]["bot_identities"]),
           f(v["dataset"]["bot_commit_share"], "pct"), f(v["dataset"]["issues"]), f(v["dataset"]["pull_requests"]),
           f(v["dataset"]["reviews"]),
-          "OK" if v["dataset"]["validation_ok"] else f"{v['dataset']['validation_issue_count']} issues"]
+          "not recorded" if v["dataset"]["validation_ok"] is None else "OK" if v["dataset"]["validation_ok"] else f"{v['dataset']['validation_issue_count']} issues"]
          for r, v in results.items()]))
 
     parts.append(table(
