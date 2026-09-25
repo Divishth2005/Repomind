@@ -24,7 +24,7 @@ knowledge/retrieval layer come first.
 | 4 — Knowledge concentration metrics | Done (see docs/METRICS.md) |
 | 5 — Bus-factor / risk analysis | Done (see docs/RISK.md) |
 | 6 — Multi-repo evaluation | Done for 8 repos (plan suggests 10–20); see docs/EVALUATION.md |
-| 7 — Structured + semantic retrieval | Not started |
+| 7 — Structured + text retrieval | Done: structured queries + BM25 text search; embeddings not implemented (see docs/RETRIEVAL.md) |
 | 8 — RAG / LLM integration | Not started |
 | 9 — Context-aware code explanation | Not started |
 | 10 — Engineering assistance | Not started |
@@ -82,6 +82,10 @@ python -m analysis.risk_cli --repo pallets/flask --sensitivity
 python -m evaluation.acquire
 python -m evaluation.cli
 
+# Module 7: ask a repository question / evaluate retrieval
+python -m retrieval.cli --repo pallets/flask "Who reviewed changes to src/flask/app.py?"
+python -m retrieval.cli --eval --repo pallets/flask
+
 # Tests
 pytest tests/ -v
 ```
@@ -95,11 +99,12 @@ database/            Module 2 -- SQLite schema, loader, relationship queries
 visualization/        Module 3 -- developer <-> file knowledge map (HTML)
 analysis/              Modules 4-5 -- concentration metrics, bus-factor risk signals
 evaluation/            Module 6 -- multi-repo batch runner, statistics, sensitivity experiments
+retrieval/             Module 7 -- question interpretation, structured queries, BM25 text search, fusion
 data/raw/             Raw, immutable acquisition output (JSONL)
 data/processed/        Normalized entities (JSONL) -- regeneratable from raw
 data/repomind.sqlite     Derived queryable database -- regeneratable from processed/
 tests/                  pytest suite
-docs/                    This file + DATA_MODEL.md + METRICS.md + RISK.md + EVALUATION.md (+ generated EVALUATION_RESULTS.md)
+docs/                    This file + DATA_MODEL.md + METRICS.md + RISK.md + EVALUATION.md (+ generated EVALUATION_RESULTS.md) + RETRIEVAL.md
 ```
 
 ## Design rules this project follows
