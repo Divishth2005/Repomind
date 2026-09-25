@@ -16,8 +16,9 @@ Living status + module list: `docs/PROJECT.md`. Entity/identity details:
    and is loaded via `python-dotenv` in `ingest/github_client.py` only.
 4. **Don't define expertise as commit count.** `database/queries.py::top_contributors`
    is explicitly labeled a signal, not a score — Module 4
-   (`analysis/`, not yet built) is where real knowledge/concentration
-   metrics get designed and evaluated.
+   (`analysis/`, documented in `docs/METRICS.md`) holds the candidate
+   concentration metrics; its multi-signal score is a hypothesis, not
+   a measure of expertise.
 5. **Build one module at a time, run `pytest tests/ -v` after each.**
 6. **Preserve provenance.** Every normalized record needs a
    `raw_source_reference` back to its raw JSONL origin.
@@ -30,9 +31,11 @@ python -m ingest.cli --repo <owner/name>          # Module 0a
 python -m ingest.github_cli --repo <owner/name>     # Module 0b (needs .env)
 python -m normalization.cli --repo <owner/name>      # Module 1
 python -m database.cli --repo <owner/name>            # Module 2
+python -m analysis.cli --repo <owner/name>            # Module 4 (repo must be loaded first)
+python pipeline.py --repo <owner/name>                # Modules 0a-3 in one go
 pytest tests/ -v
 ```
 
 ## Next module to build
 
-Module 4 — Knowledge Concentration Metrics (see `docs/PROJECT.md` status table).
+Module 5 — Bus-Factor / Risk Analysis (see `docs/PROJECT.md` status table).

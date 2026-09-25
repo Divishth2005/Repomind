@@ -21,7 +21,7 @@ knowledge/retrieval layer come first.
 | 1 — Normalization & identity resolution | Done |
 | 2 — Database & relationship construction | Done |
 | 3 — Knowledge map visualization | Done |
-| 4 — Knowledge concentration metrics | Not started |
+| 4 — Knowledge concentration metrics | Done (see docs/METRICS.md) |
 | 5 — Bus-factor / risk analysis | Not started |
 | 6 — Multi-repo evaluation | Not started |
 | 7 — Structured + semantic retrieval | Not started |
@@ -72,6 +72,9 @@ python -m database.cli --repo pallets/flask
 python -m visualization.cli --repo pallets/flask
 open data/flask_knowledge_map.html
 
+# Module 4: knowledge-concentration metrics (repo must be loaded first)
+python -m analysis.cli --repo pallets/flask
+
 # Tests
 pytest tests/ -v
 ```
@@ -82,11 +85,13 @@ pytest tests/ -v
 ingest/            Module 0a/0b -- raw acquisition (Git + GitHub GraphQL)
 normalization/      Module 1 -- raw JSONL -> normalized entities + identity resolution
 database/            Module 2 -- SQLite schema, loader, relationship queries
+visualization/        Module 3 -- developer <-> file knowledge map (HTML)
+analysis/              Module 4 -- knowledge-concentration metrics
 data/raw/             Raw, immutable acquisition output (JSONL)
 data/processed/        Normalized entities (JSONL) -- regeneratable from raw
 data/repomind.sqlite     Derived queryable database -- regeneratable from processed/
 tests/                  pytest suite
-docs/                    This file + DATA_MODEL.md
+docs/                    This file + DATA_MODEL.md + METRICS.md
 ```
 
 ## Design rules this project follows
@@ -100,6 +105,7 @@ docs/                    This file + DATA_MODEL.md
    kept separate, not guessed into a merge.
 4. **Commit count is not expertise.** Raw contributor counts (see
    `database/queries.py::top_contributors`) are a signal only -- Module 4
-   will define and evaluate actual concentration/knowledge metrics.
+   (`analysis/`) defines candidate concentration metrics, and its combined
+   score is a hypothesis to be evaluated, not a measure of expertise.
 5. **Bots are flagged, not deleted**, so they can be excluded from
    human-knowledge analysis without losing the record.
