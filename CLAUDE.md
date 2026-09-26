@@ -35,11 +35,12 @@ python -m analysis.cli --repo <owner/name>            # Module 4 (repo must be l
 python -m analysis.risk_cli --repo <owner/name>       # Module 5
 python -m evaluation.acquire && python -m evaluation.cli   # Module 6 (long download)
 python -m retrieval.cli --repo <owner/name> "<question>"  # Module 7
+python -m llm.cli --repo <owner/name> "<question>"        # Module 8 (needs GEMINI_API_KEY in .env; --dry-run does not)
 python pipeline.py --repo <owner/name>                # Modules 0a-3 in one go
 pytest tests/ -v
 ```
 
 ## Next module to build
 
-Module 8 — RAG / LLM integration (needs an LLM API key; see `docs/PROJECT.md` status table). It should build its context from `retrieval.hybrid.Retriever.retrieve()` output and cite each item's `ref`.
+Module 9 — Context-aware code explanation. Module 8 (`llm/`) is built but has not yet been run against the real Gemini API; run `python -m llm.cli --list-models` once the key is in `.env`, then `--eval`, and read the saved answers before trusting it.
 Open issues from `docs/EVALUATION.md` worth fixing first if results matter: squash-merge PR linkage and Git↔GitHub identity linking.
