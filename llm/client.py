@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_ROOT = "https://generativelanguage.googleapis.com/v1beta"
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3.8-flash"  # Google's suggested replacement once 2.5 closed to new accounts; override with LLM_MODEL
 
 
 class LLMError(RuntimeError):
@@ -100,8 +100,13 @@ class GeminiClient(LLMClient):
                 continue
             if resp.status_code in (400, 401, 403) and "key" in msg.lower():
                 raise LLMError("Gemini rejected the API key (check GEMINI_API_KEY in .env).")
+            if resp.status_code == 403:
+                raise LLMError(f"Google refused this API key's project for model '{self.model}': {msg} "
+                               "(an account or project restriction, not a problem in this code; try a key made in a "
+                               "new project with a personal Google account, or check the project in Google AI Studio).")
             if resp.status_code == 404:
-                raise LLMError(f"Model '{self.model}' was not found. Run: python -m llm.cli --list-models")
+                raise LLMError(f"Model '{self.model}' is unavailable: {msg} Run: python -m llm.cli --list-models "
+                               "and set LLM_MODEL in .env to a model that works for your key.")
             raise LLMError(f"Gemini error HTTP {resp.status_code}: {msg}")
         raise LLMError(f"Gemini request failed after {self.max_retries + 1} attempts ({last}).")
 

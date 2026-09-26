@@ -11,10 +11,14 @@ question -> Module 7 retrieval -> evidence text (every item has an id)
 
 ## Status
 
-Built and unit-tested (76 tests, using a fake model and fake HTTP). **Not yet
-run against the real Gemini API** — no key was available when it was written.
-The default model name (`gemini-2.5-flash`) is unverified; `--list-models`
-shows what the key can use, and `LLM_MODEL` in `.env` overrides it.
+Built and unit-tested (using a fake model and fake HTTP). **Not yet run
+successfully against the real Gemini API.** A key was tested on 2026-09-26:
+`--list-models` worked, but generating text failed for every model: the 2.5
+models are closed to new accounts (404) and the 3.x models returned 403
+"Your project has been denied access". That is a restriction on the key's
+Google project, not a code problem; a key from a different project/account
+is needed. The default model is `gemini-3.8-flash` (Google's suggested
+replacement); `LLM_MODEL` in `.env` overrides it.
 
 ## Setup
 

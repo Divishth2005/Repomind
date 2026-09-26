@@ -124,8 +124,11 @@ def test_gemini_errors_are_clear_and_never_leak_the_key():
     with pytest.raises(LLMError) as e:
         gemini(lambda *a, **k: error_response(400, "API key not valid. Please pass a valid API key.")).complete("s", "u")
     assert "TESTKEY123" not in str(e.value) and "GEMINI_API_KEY" in str(e.value)
-    with pytest.raises(LLMError, match="not found"):
+    with pytest.raises(LLMError, match="unavailable: model missing"):
         gemini(lambda *a, **k: error_response(404, "model missing")).complete("s", "u")
+    with pytest.raises(LLMError, match="denied access") as e403:
+        gemini(lambda *a, **k: error_response(403, "Your project has been denied access.")).complete("s", "u")
+    assert "TESTKEY123" not in str(e403.value)
     with pytest.raises(LLMError, match="failed after"):
         gemini(lambda *a, **k: error_response(503, "overloaded"), max_retries=2).complete("s", "u")
 
