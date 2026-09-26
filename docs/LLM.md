@@ -65,15 +65,41 @@ Text from PRs, issues and commits is untrusted (it could contain
 instructions). It is placed inside an `<evidence>` block and the prompt says
 to ignore instructions found there; this is a mitigation, not a guarantee.
 
-## Evaluation (built, not yet run)
+## Evaluation (pallets/flask, gemini-3.8-flash, 2026-09-26)
 
-`--eval` generates questions from the database with known correct values:
-top committer of a file, top reviewer of a file, what a PR is about, which PR
-closed an issue, plus **unanswerable** questions (a file and a PR number that
-don't exist) where the right behaviour is to say the evidence is missing. It
-reports correctness per type, answers citing ids that were not in the
-evidence, answers with unverified identifiers, answers with no citation, and
-token use, and saves every full answer for a person to read.
+`python -m llm.cli --repo pallets/flask --eval` generates questions from the
+database with known correct values (top committer of a file, top reviewer of
+a file, what a PR is about, which PR closed an issue) plus **unanswerable**
+ones (a file and a PR number that don't exist) where the right behaviour is
+to say the evidence is missing.
+
+| Question type | Correct |
+|---|---|
+| top committer of a file | 2/2 |
+| top reviewer of a file | 2/2 |
+| what a PR is about | 2/2 |
+| which PR closed an issue | 2/2 |
+| unanswerable (must abstain) | 2/2 |
+
+10 questions, 9 model calls (one unanswerable question found nothing and never
+reached the model), 6,118 prompt and 1,092 output tokens. Answers citing an id
+that was not in the evidence: 0. Answers mentioning a #number or hash not in
+the evidence: 0. Answers with no citation: 0.
+
+The saved answers (`data/processed/_evaluation/llm_flask.json`) were also read
+by hand and the checkable claims verified in the database: commit counts
+(33 vs 30 for wrappers.py), PR creation and merge dates and authors, and the
+issue-to-PR links were all correct.
+
+**Weakness found by the evaluation, then fixed.** The other unanswerable
+question ("Who reviewed changes to src/zz_no_such_file_qq.py?") did reach the
+model, because fragments of the file name matched 8 unrelated items. The model
+still abstained correctly, but should not have been asked. Retrieval now
+reports "'X' does not match any file or directory in this repository" and
+skips the search when the missing name is the only specific thing asked about
+(unit-tested, and confirmed with `--dry-run`). The evaluation was re-run after
+this fix but stopped by Google's free-tier quota (HTTP 429), so the table
+above is from the run *before* this fix; the re-run is still to do.
 
 ## Limitations
 
@@ -84,5 +110,8 @@ token use, and saves every full answer for a person to read.
   couldn't be linked, renamed files, and keyword-only search.
 - Rule-based question interpretation (Module 7) decides what evidence is
   fetched; unusual phrasings fall back to text search.
-- No results yet: nothing here is evidence that the answers are good until
-  `--eval` has been run and its answers read.
+- **The evaluation is small and easy.** 10 templated lookup questions, one
+  repository, one model. 10/10 shows the mechanism works on simple factual
+  lookups; it says little about open-ended questions ("why was X changed?"),
+  which were only read by hand for one example.
+- The free tier has a quota; a full run can be cut off (as happened).

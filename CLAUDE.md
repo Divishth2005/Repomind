@@ -42,5 +42,5 @@ pytest tests/ -v
 
 ## Next module to build
 
-Module 9 — Context-aware code explanation. Module 8 (`llm/`) is built but has not yet been run against the real Gemini API; run `python -m llm.cli --list-models` once the key is in `.env`, then `--eval`, and read the saved answers before trusting it.
+Module 9 — Context-aware code explanation. Module 8 (`llm/`) works with Gemini (key in `.env`); its evaluation is small, so read saved answers before trusting it, and re-run `--eval` after the free-tier quota resets (the last run was cut off after a fix).
 Open issues from `docs/EVALUATION.md` worth fixing first if results matter: squash-merge PR linkage and Git↔GitHub identity linking.

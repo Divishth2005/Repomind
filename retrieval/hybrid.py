@@ -114,6 +114,8 @@ class Retriever:
             notes.append(
                 f"Only {coverage['linked_via_commits']} of {coverage['pull_requests']} PRs link to commits in history "
                 "(likely squash merges); PRs are recovered from '(#N)' in commit subjects where possible.")
+        for m in plan.unresolved:
+            notes.append(f"'{m}' does not match any file or directory in this repository.")
         if len(plan.scopes) > 1:
             notes.append("Several files match the name given; results are listed for each: "
                          + ", ".join(s.label for s in plan.scopes))
@@ -167,6 +169,10 @@ class Retriever:
                  if t not in GENERIC_WORDS and not (t.isdigit() and int(t) in plan.numbers)]
         if not words and not plan.scopes:
             return []
+        if plan.unresolved and not plan.scopes:
+            skip = {t for m in plan.unresolved for t in tokenize(m)}
+            if not [t for t in words if t not in skip]:
+                return []  # the only specific thing asked about does not exist; don't search on its name fragments
         query_text = " ".join(words) if words else ""
         results: list[Evidence] = []
         if plan.scopes:

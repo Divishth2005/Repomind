@@ -25,7 +25,7 @@ knowledge/retrieval layer come first.
 | 5 — Bus-factor / risk analysis | Done (see docs/RISK.md) |
 | 6 — Multi-repo evaluation | Done for 8 repos (plan suggests 10–20); see docs/EVALUATION.md |
 | 7 — Structured + text retrieval | Done: structured queries + BM25 text search; embeddings not implemented (see docs/RETRIEVAL.md) |
-| 8 — RAG / LLM integration | Built with Gemini and unit-tested; not yet run on the real API (needs GEMINI_API_KEY); see docs/LLM.md |
+| 8 — RAG / LLM integration | Done with Gemini; live 10-question evaluation on flask 10/10 (small, easy sample); see docs/LLM.md |
 | 9 — Context-aware code explanation | Not started |
 | 10 — Engineering assistance | Not started |
 | 11 — UI | Not started |

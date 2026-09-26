@@ -193,3 +193,15 @@ def test_generic_words_and_reference_numbers_do_not_become_search_evidence(conn)
     res = answer_question(conn, REPO, "What is pull request #500 about?", client)
     assert not res["llm_called"] and client.calls == [] and res["abstained"]
     assert res["retrieval_notes"] and "500" in res["retrieval_notes"][0]
+
+
+def test_nonexistent_file_is_reported_and_not_searched_for_by_name_fragments(conn):
+    conn.execute("INSERT INTO pull_request VALUES ('p8', ?, 8, 'no such thing yet', 'a file that is not here', 'MERGED', 'bob', '2024-01-01', '2024-01-02', '[]', '[]', '[]', 'x')", (REPO,))
+    conn.commit()
+    client = FakeClient()
+    res = answer_question(conn, REPO, "Who reviewed changes to src/zz_no_such_file.py?", client)
+    assert not res["llm_called"] and client.calls == []
+    assert any("zz_no_such_file.py" in n and "does not match" in n for n in res["retrieval_notes"])
+    # a product-like name with other real words is still searched
+    out = Retriever(conn, REPO).retrieve("why config crash with node.js")
+    assert out["evidence"]

@@ -22,6 +22,7 @@ INTENT_PATTERNS = [
         r"\bwhy\b|\bwhich (pr|pull request|commit)\b|\b(introduc|caus)\w+|\bwhen was\b|\bwho (introduced|added)\b")),
     ("issues", re.compile(r"\b(related|associated|linked) issues?\b|\bissues?\b.*\b(affect|about|relat|touch)\w*")),
 ]
+CODE_EXT = re.compile(r"\.(py|js|ts|tsx|jsx|go|rs|c|h|cpp|java|rb|php|cs|sh|md|rst|txt|ya?ml|toml|json|cfg|ini|html|css|lock)$", re.IGNORECASE)
 PATH_RE = re.compile(r"[\w./\-]*[\w\-]+\.[A-Za-z0-9]{1,5}\b|\b[\w\-]+(?:/[\w.\-]+)+/?")
 HASH_RE = re.compile(r"\b[0-9a-f]{7,40}\b")
 REF_RE = re.compile(r"(?:#|\b(?:pr|pull request|pull|issue)\s*#?\s*)(\d+)\b", re.IGNORECASE)
@@ -33,6 +34,7 @@ class QueryPlan:
     intents: list[str]
     scopes: list = field(default_factory=list)
     scope_mentions: list = field(default_factory=list)
+    unresolved: list = field(default_factory=list)  # file-like names that match nothing in this repository
     numbers: list = field(default_factory=list)
     commit_shas: list = field(default_factory=list)
     developers: list = field(default_factory=list)
@@ -56,11 +58,13 @@ def interpret(conn: sqlite3.Connection, repo: str, query: str, developer_names: 
     mentions = [m.strip(".,;:?!)") for m in PATH_RE.findall(q)]
     mentions = [m for m in mentions if not re.fullmatch(r"\d+(\.\d+)*", m) and not m.lower().startswith(("e.g", "i.e"))]
     scopes, seen = [], set()
-    used_mentions = []
+    used_mentions, unresolved = [], []
     for m in mentions:
         found = st.resolve_scope(conn, repo, m)
         if found:
             used_mentions.append(m)
+        elif "/" in m or CODE_EXT.search(m):
+            unresolved.append(m)
         for s in found:
             if s.path not in seen:
                 seen.add(s.path)
@@ -103,4 +107,4 @@ def interpret(conn: sqlite3.Connection, repo: str, query: str, developer_names: 
         text = text.replace(m, " ")
     for name in matched_names:
         text = re.sub(re.escape(name), " ", text, flags=re.IGNORECASE)
-    return QueryPlan(q, intents, scopes, used_mentions, numbers, shas, devs, " ".join(text.split()))
+    return QueryPlan(q, intents, scopes, used_mentions, unresolved, numbers, shas, devs, " ".join(text.split()))
