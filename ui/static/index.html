@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RepoMind</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>RepoMind</h1>
+  <label class="repo-pick">Repository <select id="repo"></select></label>
+  <button id="addBtn" class="secondary">+ Add repository</button>
+  <span id="jobStatus" class="muted"></span>
+</header>
+
+<nav id="tabs" role="tablist">
+  <button data-tab="overview" class="active">Overview</button>
+  <button data-tab="risk">Risk</button>
+  <button data-tab="map">Knowledge map</button>
+  <button data-tab="ask">Ask</button>
+  <button data-tab="code">Code</button>
+  <button data-tab="history">History</button>
+</nav>
+
+<main>
+  <section id="tab-overview" class="tab active">
+    <div id="stats" class="cards"></div>
+    <div class="grid2">
+      <div class="panel"><h2>Top contributors</h2><p class="muted small">Commit count is a signal of activity, not a measure of expertise.</p><div id="contrib"></div></div>
+      <div class="panel"><h2>Commits per year</h2><div id="years"></div></div>
+    </div>
+    <div class="panel"><h2>Where work is concentrated</h2><div id="conc"></div></div>
+  </section>
+
+  <section id="tab-risk" class="tab">
+    <div class="panel">
+      <div class="controls">
+        <label>Component depth <select id="riskDepth"><option>1</option><option selected>2</option><option>3</option></select></label>
+        <label>Counts as active if committed in the last <select id="riskDays"><option value="180">180 days</option><option value="365" selected>365 days</option><option value="730">730 days</option></select></label>
+        <button id="riskGo">Update</button>
+      </div>
+      <p id="riskNote" class="note"></p>
+      <div id="riskLevels" class="chips"></div>
+      <div class="scroll"><table id="riskTable"></table></div>
+    </div>
+  </section>
+
+  <section id="tab-map" class="tab">
+    <div class="panel">
+      <div class="controls">
+        <label>Developers shown <input id="mapTop" type="number" min="3" max="40" value="15"></label>
+        <button id="mapGo">Draw</button>
+        <span class="legend"><i class="dot dev"></i> developer <i class="dot file"></i> file &nbsp; line thickness = number of commits touching the file</span>
+      </div>
+      <div id="mapMsg" class="muted small"></div>
+      <div id="network"></div>
+    </div>
+  </section>
+
+  <section id="tab-ask" class="tab">
+    <div class="panel">
+      <p class="muted small">Ask about people, files, pull requests or issues. Answers come from the repository's own history, and every claim links to its source.</p>
+      <textarea id="question" rows="2" placeholder="e.g. Who reviewed changes to src/flask/app.py?"></textarea>
+      <div id="examples" class="chips"></div>
+      <div class="controls">
+        <label class="check"><input type="checkbox" id="askAI"> Have the AI (Gemini) write the answer <span class="muted small">(needs a working key; otherwise you still get the evidence)</span></label>
+        <button id="askGo">Ask</button>
+      </div>
+    </div>
+    <div id="askOut"></div>
+  </section>
+
+  <section id="tab-code" class="tab">
+    <div class="panel">
+      <p class="muted small">Pick a piece of code to see it together with its history, or get a briefing on what to check before changing it.</p>
+      <div class="controls">
+        <label class="check"><input type="radio" name="mode" value="explain" checked> Explain it</label>
+        <label class="check"><input type="radio" name="mode" value="brief"> Briefing before I change it</label>
+      </div>
+      <div class="controls">
+        <label>File <input id="codeFile" list="fileList" placeholder="start typing a path" size="38"></label>
+        <datalist id="fileList"></datalist>
+        <label>Function <select id="codeFn"><option value="">(none: use lines or whole file)</option></select></label>
+        <label>or lines <input id="codeLines" placeholder="100-160" size="9"></label>
+      </div>
+      <textarea id="codeText" rows="2" placeholder="Optional: a question about the code, or (for a briefing) what you plan to change"></textarea>
+      <div class="controls">
+        <label class="check"><input type="checkbox" id="codeAI"> Have the AI (Gemini) write it <span class="muted small">(otherwise you get the evidence)</span></label>
+        <button id="codeGo">Go</button>
+      </div>
+    </div>
+    <div id="codeOut"></div>
+  </section>
+
+  <section id="tab-history" class="tab">
+    <div class="grid2">
+      <div class="panel">
+        <h2>Search commits, pull requests, issues and reviews</h2>
+        <div class="controls"><input id="searchQ" placeholder="e.g. session cookie crash" size="34"><button id="searchGo">Search</button></div>
+        <div id="searchOut"></div>
+      </div>
+      <div class="panel">
+        <h2>History of a file</h2>
+        <div class="controls"><input id="histFile" list="fileList" placeholder="start typing a path" size="34"><button id="histGo">Show</button></div>
+        <div id="histOut"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<aside id="drawer" hidden>
+  <button id="drawerClose" class="secondary">Close</button>
+  <div id="drawerBody"></div>
+</aside>
+
+<dialog id="addDialog">
+  <form method="dialog" id="addForm">
+    <h2>Add a repository</h2>
+    <p class="muted small">Downloads its history and GitHub data, then adds it here. Small repositories take under a minute; large ones can take many minutes. Uses the GitHub token in <code>.env</code>.</p>
+    <label>owner/name <input id="addRepo" placeholder="pallets/click" size="30"></label>
+    <label class="check"><input type="checkbox" id="addSkip"> Git history only (skip issues, PRs, reviews; no token needed)</label>
+    <div id="addErr" class="error"></div>
+    <div class="controls"><button value="cancel" class="secondary">Cancel</button><button id="addStart" value="default">Start</button></div>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

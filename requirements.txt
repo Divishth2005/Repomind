@@ -2,3 +2,4 @@ GitPython>=3.1.40
 requests>=2.31.0
 python-dotenv>=1.0.0
 pytest>=7.4.0
+flask>=3.0

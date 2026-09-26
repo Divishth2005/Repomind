@@ -83,7 +83,7 @@ def test_python_symbols_qualified_names_decorators_and_nesting():
 
 def test_read_file_and_missing_clone(world, tmp_path):
     assert read_file(REPO, "a.py").startswith("def alpha")
-    with pytest.raises(SourceError, match="Could not read"):
+    with pytest.raises(SourceError, match="does not exist in the latest version"):
         read_file(REPO, "nope.py")
     with pytest.raises(SourceError, match="No local clone"):
         read_file("o/absent", "a.py")
@@ -104,8 +104,10 @@ def test_resolve_target_errors_are_helpful():
     assert resolve_target(code, None, None)[2] == "whole file"
     with pytest.raises(SourceError, match="Some that exist: alpha, beta"):
         resolve_target(code, "gamma", None)
-    with pytest.raises(SourceError, match="outside the file"):
+    with pytest.raises(SourceError, match="it has 8 lines"):
         resolve_target(code, None, (5, 500))
+    with pytest.raises(SourceError, match="must not be after"):
+        resolve_target(code, None, (9, 2))
 
 
 def test_gather_links_commits_to_prs_issues_and_people(world):

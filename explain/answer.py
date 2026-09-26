@@ -29,8 +29,10 @@ def resolve_target(source: str, function: str | None, lines: tuple[int, int] | N
         return s.start, s.end, s.name
     if lines:
         a, b = lines
-        if not (1 <= a <= b <= total):
-            raise SourceError(f"Line range {a}-{b} is outside the file (1-{total}).")
+        if a > b:
+            raise SourceError(f"The first line ({a}) must not be after the last line ({b}).")
+        if not (1 <= a and b <= total):
+            raise SourceError(f"Line range {a}-{b} is outside the file (it has {total} lines).")
         return a, b, f"lines {a}-{b}"
     return 1, total, "whole file"
 

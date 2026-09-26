@@ -28,7 +28,7 @@ knowledge/retrieval layer come first.
 | 8 — RAG / LLM integration | Done with Gemini; live 10-question evaluation on flask 10/10 (small, easy sample); see docs/LLM.md |
 | 9 — Context-aware code explanation | Built; history retrieval measured on 4 repos; live model explanations not yet run (quota); see docs/EXPLAIN.md |
 | 10 — Engineering assistance | Built; co-change and fix-wording checked on 7 repos without an LLM; live model briefings not yet run (quota); see docs/ASSIST.md |
-| 11 — UI | Not started |
+| 11 — UI | Done: local web interface with 6 screens; see docs/UI.md |
 
 ## Demo repositories
 
@@ -98,6 +98,9 @@ python -m explain.cli --stats --repo pallets/flask
 python -m assist.cli --repo pallets/flask --file src/flask/helpers.py --function url_for --dry-run
 python -m assist.cli --eval --repo pallets/flask
 
+# Module 11: the web interface (open http://127.0.0.1:8765)
+python -m ui
+
 # Tests
 pytest tests/ -v
 ```
@@ -115,11 +118,12 @@ retrieval/             Module 7 -- question interpretation, structured queries, 
 llm/                   Module 8 -- evidence context, grounding prompt, Gemini client, citation checks, evaluation
 explain/               Module 9 -- code + line-level history -> grounded explanation
 assist/                Module 10 -- co-change, fix detection, change briefing
+ui/                    Module 11 -- Flask API + plain HTML/CSS/JS interface
 data/raw/             Raw, immutable acquisition output (JSONL)
 data/processed/        Normalized entities (JSONL) -- regeneratable from raw
 data/repomind.sqlite     Derived queryable database -- regeneratable from processed/
 tests/                  pytest suite
-docs/                    This file + DATA_MODEL.md + METRICS.md + RISK.md + EVALUATION.md (+ generated EVALUATION_RESULTS.md) + RETRIEVAL.md + LLM.md + EXPLAIN.md + ASSIST.md
+docs/                    This file + DATA_MODEL.md + METRICS.md + RISK.md + EVALUATION.md (+ generated EVALUATION_RESULTS.md) + RETRIEVAL.md + LLM.md + EXPLAIN.md + ASSIST.md + UI.md
 ```
 
 ## Design rules this project follows

@@ -46,7 +46,9 @@ def read_file(repo: str, path: str, ref: str = "HEAD") -> str:
     try:
         return _git(clone_path(repo), "show", f"{ref}:{path}")
     except SourceError as e:
-        raise SourceError(f"Could not read '{path}' at {ref} in {repo}: {e}")
+        if "does not exist" in str(e) or "exists on disk, but not in" in str(e):
+            raise SourceError(f"'{path}' does not exist in the latest version of {repo}. Check the file path.")
+        raise SourceError(f"Could not read '{path}' in {repo}: {e}")
 
 
 def python_symbols(source: str) -> list[Symbol]:

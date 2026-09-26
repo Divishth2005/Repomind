@@ -21,6 +21,12 @@ pip install -r requirements.txt
 cp .env.example .env   # then edit .env with your GitHub token
 ```
 
+## Web interface
+
+```bash
+python -m ui     # then open http://127.0.0.1:8765
+```
+
 ## Run the pipeline
 
 ```bash
