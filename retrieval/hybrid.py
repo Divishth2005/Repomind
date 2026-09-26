@@ -22,7 +22,8 @@ from retrieval.text_search import BM25Index, build_documents, tokenize
 KINDS = ("commit", "pr", "issue", "review")
 GENERIC_WORDS = set(tokenize(
     "who what changed change changes history recent recently file files component directory worked work "
-    "reviewed review reviewers maintain contributor contributors author main most code"))
+    "reviewed review reviewers maintain contributor contributors author main most code "
+    "pull request pr issue issues commit commits number about"))
 
 
 def _snippet(text: str, n=220) -> str:
@@ -162,7 +163,8 @@ class Retriever:
                 "evidence": [e.to_dict() for e in evidence], "notes": notes}
 
     def _text_evidence(self, plan: QueryPlan, limit: int) -> list[Evidence]:
-        words = [t for t in tokenize(plan.text) if t not in GENERIC_WORDS]
+        words = [t for t in tokenize(plan.text)
+                 if t not in GENERIC_WORDS and not (t.isdigit() and int(t) in plan.numbers)]
         if not words and not plan.scopes:
             return []
         query_text = " ".join(words) if words else ""

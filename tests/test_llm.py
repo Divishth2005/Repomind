@@ -184,3 +184,12 @@ def test_run_eval_summarises_and_never_calls_model_for_missing_things(conn):
     assert out["questions"] == len(out["rows"]) and out["correct_by_type"]["unanswerable"]["total"] == 2
     assert out["correct_by_type"]["unanswerable"]["correct"] == 2  # nothing found -> model not called -> abstains
     assert out["answers_with_invalid_citation"] >= 1
+
+
+def test_generic_words_and_reference_numbers_do_not_become_search_evidence(conn):
+    conn.execute("INSERT INTO pull_request VALUES ('p9', ?, 9, 'Add pull request template', 'A pull request template.', 'MERGED', 'bob', '2024-01-01', '2024-01-02', '[]', '[]', '[]', 'x')", (REPO,))
+    conn.commit()
+    client = FakeClient()
+    res = answer_question(conn, REPO, "What is pull request #500 about?", client)
+    assert not res["llm_called"] and client.calls == [] and res["abstained"]
+    assert res["retrieval_notes"] and "500" in res["retrieval_notes"][0]

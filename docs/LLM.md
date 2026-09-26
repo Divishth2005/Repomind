@@ -11,14 +11,26 @@ question -> Module 7 retrieval -> evidence text (every item has an id)
 
 ## Status
 
-Built and unit-tested (using a fake model and fake HTTP). **Not yet run
-successfully against the real Gemini API.** A key was tested on 2026-09-26:
-`--list-models` worked, but generating text failed for every model: the 2.5
-models are closed to new accounts (404) and the 3.x models returned 403
-"Your project has been denied access". That is a restriction on the key's
-Google project, not a code problem; a key from a different project/account
-is needed. The default model is `gemini-3.8-flash` (Google's suggested
-replacement); `LLM_MODEL` in `.env` overrides it.
+Built, unit-tested (fake model and fake HTTP), and run live on 3 hand-picked
+questions against `gemini-3.8-flash` (2026-09-26). A first key from a
+restricted Google project was refused for generation (403, and the 2.5
+models are closed to new accounts with 404); a key from a different project
+worked. The formal `--eval` has **not** been run yet, so there is no measured
+answer quality beyond those three reads:
+
+- "Who reviewed changes to src/flask/app.py?": names and counts matched the
+  database exactly, cited `[fact:1]`, and mentioned the identity-split caveat.
+- "why was BadRequestKeyError changed?": five cited items, all present in the
+  evidence and consistent with it; the word "unintentionally" was the model's
+  own interpretation, not in the evidence.
+- "What is pull request #999999 about?": found nothing, so (after a fix) the
+  model is not called and a fixed "not enough evidence" reply is returned.
+  Before the fix, generic words ("pull request") matched 8 unrelated PRs, the
+  model was called, and it happened to abstain. Numbers being looked up and
+  generic words are no longer used as text-search terms.
+
+The default model is `gemini-3.8-flash`; `LLM_MODEL` in `.env` overrides it,
+and `--list-models` shows what a key can use.
 
 ## Setup
 
