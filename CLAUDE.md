@@ -37,11 +37,12 @@ python -m evaluation.acquire && python -m evaluation.cli   # Module 6 (long down
 python -m retrieval.cli --repo <owner/name> "<question>"  # Module 7
 python -m llm.cli --repo <owner/name> "<question>"        # Module 8 (needs GEMINI_API_KEY in .env; --dry-run does not)
 python -m explain.cli --repo <owner/name> --file <path> --function <name>   # Module 9 (--dry-run / --stats need no key)
+python -m assist.cli --repo <owner/name> --file <path> --function <name>   # Module 10 (--dry-run / --eval need no key)
 python pipeline.py --repo <owner/name>                # Modules 0a-3 in one go
 pytest tests/ -v
 ```
 
 ## Next module to build
 
-Module 10 — Engineering assistance. Module 9 (`explain/`) is built but no live model explanation has been generated yet; run one and read it when the Gemini quota allows. Module 8 (`llm/`) works with Gemini (key in `.env`); its evaluation is small, so read saved answers before trusting it, and re-run `--eval` after the free-tier quota resets (the last run was cut off after a fix).
+Module 11 — UI. Modules 9 and 10 (`explain/`, `assist/`) have not produced a live model answer yet (Gemini quota); read one of each when it allows. Module 9 (`explain/`) is built but no live model explanation has been generated yet; run one and read it when the Gemini quota allows. Module 8 (`llm/`) works with Gemini (key in `.env`); its evaluation is small, so read saved answers before trusting it, and re-run `--eval` after the free-tier quota resets (the last run was cut off after a fix).
 Open issues from `docs/EVALUATION.md` worth fixing first if results matter: squash-merge PR linkage and Git↔GitHub identity linking.

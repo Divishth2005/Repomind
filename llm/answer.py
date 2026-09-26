@@ -18,7 +18,7 @@ from llm.context_builder import HEX, NUM, build_context
 from llm.prompts import SYSTEM_PROMPT, build_user_prompt
 from retrieval.hybrid import Retriever
 
-CITE = re.compile(r"\[((?:commit|pr|issue|review|fact|code):[^\]\s]+)\]")
+CITE = re.compile(r"\[((?:commit|pr|issue|review|fact|code|cochange):[^\]\s]+)\]")
 NO_EVIDENCE_REPLY = ("I could not find repository evidence relevant to this question, so I can't answer it. "
                      "Try naming a file, directory, PR/issue number or person that exists in this repository.")
 ABSTAIN = re.compile(
