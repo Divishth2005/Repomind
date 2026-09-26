@@ -26,7 +26,7 @@ knowledge/retrieval layer come first.
 | 6 — Multi-repo evaluation | Done for 8 repos (plan suggests 10–20); see docs/EVALUATION.md |
 | 7 — Structured + text retrieval | Done: structured queries + BM25 text search; embeddings not implemented (see docs/RETRIEVAL.md) |
 | 8 — RAG / LLM integration | Done with Gemini; live 10-question evaluation on flask 10/10 (small, easy sample); see docs/LLM.md |
-| 9 — Context-aware code explanation | Not started |
+| 9 — Context-aware code explanation | Built; history retrieval measured on 4 repos; live model explanations not yet run (quota); see docs/EXPLAIN.md |
 | 10 — Engineering assistance | Not started |
 | 11 — UI | Not started |
 
@@ -90,6 +90,10 @@ python -m retrieval.cli --eval --repo pallets/flask
 python -m llm.cli --repo pallets/flask --dry-run "Who reviewed changes to src/flask/app.py?"
 python -m llm.cli --repo pallets/flask "Who reviewed changes to src/flask/app.py?"
 
+# Module 9: explain a function with its history (--dry-run and --stats need no API key)
+python -m explain.cli --repo pallets/flask --file src/flask/helpers.py --function flash --dry-run
+python -m explain.cli --stats --repo pallets/flask
+
 # Tests
 pytest tests/ -v
 ```
@@ -105,11 +109,12 @@ analysis/              Modules 4-5 -- concentration metrics, bus-factor risk sig
 evaluation/            Module 6 -- multi-repo batch runner, statistics, sensitivity experiments
 retrieval/             Module 7 -- question interpretation, structured queries, BM25 text search, fusion
 llm/                   Module 8 -- evidence context, grounding prompt, Gemini client, citation checks, evaluation
+explain/               Module 9 -- code + line-level history -> grounded explanation
 data/raw/             Raw, immutable acquisition output (JSONL)
 data/processed/        Normalized entities (JSONL) -- regeneratable from raw
 data/repomind.sqlite     Derived queryable database -- regeneratable from processed/
 tests/                  pytest suite
-docs/                    This file + DATA_MODEL.md + METRICS.md + RISK.md + EVALUATION.md (+ generated EVALUATION_RESULTS.md) + RETRIEVAL.md + LLM.md
+docs/                    This file + DATA_MODEL.md + METRICS.md + RISK.md + EVALUATION.md (+ generated EVALUATION_RESULTS.md) + RETRIEVAL.md + LLM.md + EXPLAIN.md
 ```
 
 ## Design rules this project follows
