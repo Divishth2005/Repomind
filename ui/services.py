@@ -285,4 +285,8 @@ class Workspace:
                     out["llm"] = self._llm(call)
                 return out
             except SourceError as e:
-                raise ServiceError(str(e))
+                msg = str(e)
+                if "does not exist" in msg:
+                    close = self.files(repo, path.split("/")[-1][:24], limit=5) or self.files(repo, "", limit=5)
+                    msg += " Files you can try: " + ", ".join(f["path"] for f in close)
+                raise ServiceError(msg)

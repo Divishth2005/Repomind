@@ -106,6 +106,7 @@ def test_code_endpoints_explain_and_brief(world, tmp_path):  # noqa: F811
     assert outside.status_code == 400 and "it has 8 lines" in outside.get_json()["error"]
     missing = c.post(f"/api/repo/{REPO}/code", json={"mode": "explain", "path": "nope.py"})
     assert missing.status_code == 400 and "does not exist in the latest version" in missing.get_json()["error"] and "fatal" not in missing.get_json()["error"]
+    assert "Files you can try: a.py" in missing.get_json()["error"]  # tells the user what does exist
     assert c.post(f"/api/repo/{REPO}/code", json={"mode": "weird", "path": "a.py"}).status_code == 400
 
 

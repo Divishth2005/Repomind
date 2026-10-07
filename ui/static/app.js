@@ -203,10 +203,12 @@ $("#question").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.
 let fileTimer;
 $("#codeFile").addEventListener("input", (e) => { clearTimeout(fileTimer); fileTimer = setTimeout(() => suggestFiles(e.target.value), 200); });
 $("#histFile").addEventListener("input", (e) => { clearTimeout(fileTimer); fileTimer = setTimeout(() => suggestFiles(e.target.value), 200); });
-async function suggestFiles(text) {
-  if (!repo || text.length < 2) return;
+async function suggestFiles(text, min = 2) {
+  if (!repo || text.length < min) return;
   try { clear($("#fileList")).append(...(await api(`${R()}/files?q=${encodeURIComponent(text)}`)).map((f) => h("option", { value: f.path }, `${f.commits} commits`))); } catch (e) { /* optional */ }
 }
+$("#codeFile").addEventListener("focus", () => suggestFiles("", 0));
+$("#histFile").addEventListener("focus", () => suggestFiles("", 0));
 $("#codeFile").addEventListener("change", async (e) => {
   const sel = clear($("#codeFn"));
   sel.append(h("option", { value: "" }, "(none: use lines or whole file)"));
